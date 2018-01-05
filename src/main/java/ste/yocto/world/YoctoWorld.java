@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright (C) 2018 Stefano Fornari.
  * All Rights Reserved.  No use, copying or distribution of this
  * work may be made except in accordance with a valid license
@@ -165,6 +165,14 @@ public class YoctoWorld {
     public Yocto get() {
         checkSelected();
         return getYocto(selected.x, selected.y);
+    }
+    
+    public YoctoWorld set(Yocto y) {
+        checkSelected();
+        
+        map[selected.y-1][selected.x-1] = y;
+        
+        return this;
     }
     
     /**

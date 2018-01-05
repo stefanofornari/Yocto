@@ -98,6 +98,28 @@ public class BugFreeYoctoWorldManipulation {
     }
     
     @Test
+    public void set_fails_if_no_spot_selected() {
+        YoctoWorld w = YoctoWorldFactory.random(3, 5);
+        
+        try {
+            w.set(NEUTRAL);
+            fail("missing select first check");
+        } catch (IllegalStateException x) {
+            then(x).hasMessage("no yoctospot seleceted, first select one with select(x,y)");
+        }
+    }
+    
+    @Test
+    public void fluent_set_sets_the_selected_yocto_ok() {
+        YoctoWorld w = YoctoWorldFactory.empty(5, 5);
+        
+        then(w.select(1,1).set(ATTRACTOR)).isSameAs(w);
+        then(w.get()).isEqualTo(ATTRACTOR);
+        then(w.select(3,5).set(FRIEND)).isSameAs(w);
+        then(w.get()).isEqualTo(FRIEND);
+    }
+    
+    @Test
     public void fluent_moveTo_moves_slected_yocto() {
         final Yocto[][] MAP = new Yocto[][] {
             new Yocto[] { NEUTRAL, ATTRACTOR, FRIEND },
