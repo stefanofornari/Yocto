@@ -1,0 +1,15 @@
+.yocto-tile {
+    -fx-background-color: #f0f0f0;
+}
+
+.yocto-tile-high {
+    -fx-background-color: wheat;
+}
+
+.yocto-tile #yoctoLabel {
+    -fx-font-weight: bold;
+}
+
+.yocto-tile #energyLabel {
+    -fx-font-size: 8;
+}
