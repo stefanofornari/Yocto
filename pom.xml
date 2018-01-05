@@ -55,7 +55,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ste.yocto.ui.YoctoWorldConsole</mainClass>
+                            <mainClass>ste.yocto.ui.YoctoLab</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
