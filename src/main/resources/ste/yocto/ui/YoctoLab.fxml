@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -54,21 +55,25 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <AnchorPane>
-            <children>
-                <GridPane fx:id="worldPane" AnchorPane.topAnchor="0.0">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-               <padding>
-                  <Insets bottom="5.0" top="5.0" />
-               </padding>
-                </GridPane>
-            </children>
-        </AnchorPane>
+      <ScrollPane>
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0">
+               <children>
+                      <GridPane fx:id="worldPane">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                      </GridPane>
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
         <HBox alignment="CENTER" prefHeight="26.0" prefWidth="211.0">
             <children>
                 <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#play" prefHeight="26.0" prefWidth="5.0" text="▶" textAlignment="CENTER" />
