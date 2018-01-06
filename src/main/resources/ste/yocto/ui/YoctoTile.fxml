@@ -5,8 +5,8 @@
 
 <fx:root onMouseClicked="#onClick" onMouseEntered="#mouseIn" onMouseExited="#mouseOut" prefColumns="1" prefRows="3" styleClass="yocto-tile" type="javafx.scene.layout.TilePane" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="energyLabel" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" prefWidth="48.0" textAlignment="RIGHT" />
-        <Label fx:id="yoctoLabel" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" prefWidth="48.0" textAlignment="CENTER" />
-        <Label fx:id="noteLabel" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" prefWidth="48.0" textAlignment="LEFT"/>
+        <Label fx:id="energyLabel" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="12.0" prefWidth="36.0" textAlignment="RIGHT" />
+        <Label fx:id="yoctoLabel" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="12.0" prefWidth="36.0" textAlignment="CENTER" />
+        <Label fx:id="noteLabel" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="12.0" prefWidth="36.0" textAlignment="LEFT"/>
     </children>
 </fx:root>

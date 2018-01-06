@@ -17,16 +17,20 @@
  */
 package ste.yocto.ui;
 
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.TilePane;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import ste.yocto.world.YoctoWorld;
 import ste.yocto.world.YoctoWorldFactory;
@@ -35,21 +39,30 @@ import ste.yocto.world.YoctoWorldFactory;
  *
  * @author ste
  */
-public class YoctoLab extends Application {
+public class YoctoLab extends Application
+                      implements Initializable {
     
-    public static final int WIDTH = 5;
-    public static final int HEIGHT = 5;
+    public static final int WIDTH = 10;
+    public static final int HEIGHT = 10;
     
     private static Parent root;
     
+    private Task updateViewTask;
+    
     @FXML
-    private TilePane worldPane;
+    private GridPane worldPane;
+    
+    @FXML
+    private Button playButton;
+    
+    @FXML
+    private Button pauseButton;
     
     public static final YoctoWorld WORLD = YoctoWorldFactory.empty(WIDTH, HEIGHT);
     
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(root, 300, 600);
+        Scene scene = new Scene(root);
         
         scene.getStylesheets().add(
             getClass().getResource("/ste/yocto/ui/css/stylesheet.css").toExternalForm()
@@ -60,14 +73,31 @@ public class YoctoLab extends Application {
         stage.show();
     }
     
+    @Override
     public void stop() {
         Platform.exit();
         System.exit(0);
     }
     
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        for (int y=1; y<=HEIGHT; ++y) {
+            for (int x=1; x<=WIDTH; ++x) {
+                worldPane.add(new YoctoTile(), x-1, y-1);
+            }
+        }
+    }
+    
     @FXML
-    public void action() {
-        Task updateViewTask = new Task<Void>() {
+    public void pause() {
+        updateViewTask.cancel(true);
+        playButton.setDisable(false);
+        pauseButton.setDisable(true);
+    }
+    
+    @FXML
+    public void play() {
+        updateViewTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 while (!isCancelled()) {
@@ -92,7 +122,14 @@ public class YoctoLab extends Application {
         Thread t = new Thread(updateViewTask);
         t.setDaemon(false);
         t.start();
+        
+        playButton.setDisable(true);
+        pauseButton.setDisable(false);
     }
+    
+    
+    
+    // -------------------------------------------------------------------- main
     
     /**
      * @param args the command line arguments
