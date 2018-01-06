@@ -248,9 +248,11 @@ public class YoctoWorld {
     public void evolve() {
         for (int y=1; y<=getHeight(); ++y) {
             for (int x=1; x<=getWidth(); ++x) {
-                int e = getEnergy(x, y);
-                if ((getYocto(x, y) != Yocto.NEUTRAL) && (e < 0)) {
-                    moveToBestSpot(x, y, e);
+                if (getYocto(x, y) != Yocto.NEUTRAL) {
+                    int e = getEnergy(x, y);
+                    if (e<0) {
+                        moveToBestSpot(x, y, e);
+                    }
                 }
             }
         }
@@ -311,7 +313,7 @@ public class YoctoWorld {
         //
         // North West
         //
-            if ((x>1 && y>1) && (getYocto(x-1, y-1) == Yocto.NEUTRAL)) {
+        if ((x>1 && y>1) && (getYocto(x-1, y-1) == Yocto.NEUTRAL)) {
             to = new YoctoSpot(x-1, y-1);
             move(from, to);
             e = getEnergy(x-1, y-1);
@@ -443,7 +445,7 @@ public class YoctoWorld {
         //
         // South West
         //
-        if ((x>1 && y<WIDTH) && (getYocto(x-1, y+1) == Yocto.NEUTRAL)) {
+        if ((x>1 && y<HEIGHT) && (getYocto(x-1, y+1) == Yocto.NEUTRAL)) {
             to = new YoctoSpot(x-1, y+1);
             move(from, to);
             e = getEnergy(x-1, y+1);
