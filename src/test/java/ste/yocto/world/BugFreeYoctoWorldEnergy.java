@@ -67,16 +67,16 @@ public class BugFreeYoctoWorldEnergy {
     };
     
     private static final byte[][] WORLD_NOT_ADJACENT_ARF_MAP = new byte[][] {
-        "+ + =    -".getBytes(),
+        "+ + =     ".getBytes(),
         "      -   ".getBytes(),
-        "   +    = ".getBytes(),
-        "+         ".getBytes(),
-        "         =".getBytes(),
+        "   +      ".getBytes(),
+        "+      =  ".getBytes(),
+        "          ".getBytes(),
         "- +   -   ".getBytes(),
         "          ".getBytes(),
         "    =   - ".getBytes(),
         " +    -   ".getBytes(),
-        "   -    = ".getBytes()
+        "          ".getBytes()
     };
     
     
@@ -120,16 +120,16 @@ public class BugFreeYoctoWorldEnergy {
     };
     
     private static final int[][] WORLD_ADJACENT_BORDER_A_ENERGY = new int[][] {
-        new int[] { 4, 6, 5, 0, 3, 3, 2, 0, 0, 1 },
-        new int[] { 4, 6, 5, 4, 0, 0, 0, 0, 0, 0 },
+        new int[] { 8, 9, 8, 0, 6, 6, 5, 0, 0, 6 },
+        new int[] { 5, 6, 5, 4, 0, 0, 0, 0, 0, 0 },
         new int[] { 0, 0, 0, 0, 0, 3, 0, 0, 2, 0 },
-        new int[] { 2, 0, 0, 0, 0, 3, 3, 0, 0, 3 },
-        new int[] { 2, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        new int[] { 3, 0, 0, 0, 0, 3, 3, 0, 0, 5 },
+        new int[] { 3, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
         new int[] { 0, 0, 3, 2, 0, 0, 0, 0, 4, 0 },
         new int[] { 0, 2, 0, 0, 0, 0, 2, 5, 5, 0 },
         new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 6, 4 },
         new int[] { 0, 4, 0, 4, 0, 0, 5, 7, 7, 0 },
-        new int[] { 3, 4, 5, 4, 4, 4, 5, 6, 5, 3 }
+        new int[] { 7, 7, 7, 6, 6, 7, 7, 7, 6, 6 }
     };
     
     private static final byte[][] WORLD_ADJACENT_BORDER_AR_MAP = new byte[][] {
@@ -146,16 +146,16 @@ public class BugFreeYoctoWorldEnergy {
     };
     
     private static final int[][] WORLD_ADJACENT_BORDER_AR_ENERGY = new int[][] {
-        new int[] {  0,  1,  0,  0,  0,  0,  0, -2, -3, -2 },
+        new int[] {  0,  3,  0,  0,  0,  0,  0, -2, -3, -2 },
         new int[] {  0,  1,  2,  2,  0,  0,  0,  0,  0,  0 },
         new int[] {  0,  0,  0,  0,  0,  2,  0,  0,  0,  0 },
         new int[] {  0,  0,  0,  0,  1,  2,  3,  0,  1,  0 },
-        new int[] { -2,  0,  3,  0,  0,  0,  0,  0,  1,  0 },
-        new int[] { -2,  0,  3,  3,  0,  0,  0,  0,  0,  1 },
+        new int[] { -1,  0,  3,  0,  0,  0,  0,  0,  1,  0 },
+        new int[] { -1,  0,  3,  3,  0,  0,  0,  0,  0, -1 },
         new int[] {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
         new int[] {  0,  2,  4,  2,  0,  0,  1,  0,  0,  0 },
         new int[] {  0,  4,  7,  4,  0,  0,  1,  2,  0,  0 },
-        new int[] {  0,  2,  4,  2,  0,  0,  0,  0,  0,  0 }
+        new int[] {  0,  1,  3,  2,  0,  0,  0,  0,  0,  0 }
     };
     
     private static final byte[][] WORLD_ADJACENT_BORDER_ARF_MAP = new byte[][] {
@@ -167,11 +167,11 @@ public class BugFreeYoctoWorldEnergy {
     };
     
     private static final int[][] WORLD_ADJACENT_BORDER_ARF_ENERGY = new int[][] {
-        new int[] {  0,  2,  0,  0,  0,  0,  0,  1,  0,  0,  0, -2,  0,  0,  0,  0,  0, -1, -3, -2 },
+        new int[] { -3,  2,  0,  0,  0,  0,  0,  1,  0,  1,  0, -3,  0,  0,  0,  0,  0, -1, -4, -2 },
         new int[] {  0,  1,  2,  2,  0,  0,  0,  0,  0,  0,  0, -3,  0,  0,  2,  3,  0,  0,  0,  0 },
         new int[] {  0,  0,  3,  0,  0,  1,  0,  0,  0,  0,  0, -3,  0,  0,  0,  0,  2,  3, -1,  0 },
         new int[] {  0,  0,  0,  0,  1,  1,  2,  0,  1,  0,  0, -3,  0,  0,  0,  0,  0, -1,  0,  0 },
-        new int[] { -1,  0,  1,  0,  0,  0,  0,  0, -1,  0,  0, -2,  0,  0,  0,  1,  0,  1, -1,  0 }
+        new int[] { -3,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0, -3,  0,  0,  0,  1,  0, -1, -4, -2 }
     };
     
     // -------------------------------------------------------------------------
@@ -266,8 +266,9 @@ public class BugFreeYoctoWorldEnergy {
         };
         
         for (int i=0; i<WORLDS.length; ++i) {
+            System.out.println("-" + i + "-");
             for (int y=1; y<=WORLDS[i].getHeight(); ++y) {
-                System.out.println("");
+                System.out.println("--");
                 for (int x=1; x<=WORLDS[i].getWidth(); ++x) {
                     System.out.println(i + ": (" + x + "," + y + ")");
                     then(WORLDS[i].getEnergy(x, y)).isEqualTo(ENERGY[i][y-1][x-1]);

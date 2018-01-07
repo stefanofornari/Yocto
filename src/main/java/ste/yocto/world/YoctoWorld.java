@@ -215,34 +215,20 @@ public class YoctoWorld {
         
         final Yocto Y = map[y][x];
         
-        int e = Y.e();
+        //
+        // if coordinates overlay an edge, continue on the other edge (the world 
+        // is a spheroid)
+        //
         
-        if (x>0 && y>0) {
-            e += Y.e(map[y-1][x-1]);
-        }
-        if (x>0) {
-            e += Y.e(map[y][x-1]);
-        }
-        if (x>0 && y<MAXH) {
-            e += Y.e(map[y+1][x-1]);
-        }
-        if (y>0) {
-            e += Y.e(map[y-1][x]);
-        }
-        if (y<MAXH) {
-            e += Y.e(map[y+1][x]);
-        }
-        if (x<MAXW && y>0) {
-            e += Y.e(map[y-1][x+1]);
-        }
-        if (x<MAXW) {
-            e += Y.e(map[y][x+1]);
-        }
-        if (x<MAXW && y<MAXH) {
-            e += Y.e(map[y+1][x+1]);
-        }
-        
-        return e;
+        return Y.e()            +
+               Y.e(getNW(x, y)) +
+               Y.e( getN(x, y)) +
+               Y.e(getNE(x, y)) +
+               Y.e( getE(x, y)) +
+               Y.e(getSE(x, y)) +
+               Y.e( getS(x, y)) +
+               Y.e( getW(x, y)) +
+               Y.e(getSW(x, y)) ;
     }
     
     public void evolve() {
@@ -290,6 +276,58 @@ public class YoctoWorld {
         if ((y <= 0) || (y > getHeight())) {
             throw new IllegalArgumentException("y must be a positive number less then " + getHeight() + " (found " + y + ")");
         }
+    }
+    
+    private Yocto getNW(int x, int y) {
+        x = (x == 0) ? (getWidth()-1) : x-1;
+        y = (y == 0) ? (getHeight()-1) : y-1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getW(int x, int y) {
+        x = (x == 0) ? (getWidth()-1) : x-1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getSW(int x, int y) {
+        x = (x == 0) ? (getWidth()-1) : x-1;
+        y = (y == getHeight()-1) ? 0 : y+1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getN(int x, int y) {
+        y = (y == 0) ? (getHeight()-1) : y-1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getS(int x, int y) {
+        y = (y == getHeight()-1) ? 0 : y+1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getNE(int x, int y) {
+        x = (x == getWidth()-1) ? 0 : x+1;
+        y = (y == 0) ? getHeight()-1 : y-1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getE(int x, int y) {
+        x = (x == getWidth()-1) ? 0 : x+1;
+        
+        return map[y][x];
+    }
+    
+    private Yocto getSE(int x, int y) {
+        x = (x == getWidth()-1) ? 0 : x+1;
+        y = (y == getHeight()-1) ? 0 : y+1;
+        
+        return map[y][x];
     }
     
     private void move(YoctoSpot from, YoctoSpot to) {
