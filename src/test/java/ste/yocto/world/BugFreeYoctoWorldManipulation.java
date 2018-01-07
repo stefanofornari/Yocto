@@ -120,7 +120,7 @@ public class BugFreeYoctoWorldManipulation {
     }
     
     @Test
-    public void fluent_moveTo_moves_slected_yocto() {
+    public void fluent_moveTo_moves_selected_yocto() {
         final Yocto[][] MAP = new Yocto[][] {
             new Yocto[] { NEUTRAL, ATTRACTOR, FRIEND },
             new Yocto[] { REJECTOR, FRIEND, REJECTOR }
