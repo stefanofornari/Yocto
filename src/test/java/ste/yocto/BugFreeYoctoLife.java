@@ -138,6 +138,49 @@ public class BugFreeYoctoLife {
     }
     
     @Test
+    public void move_across_boundaries_r() throws Exception {
+        final YoctoWorld W = YoctoWorldFactory.fromStrings(new String[] {
+            "-  ",
+            "   ",
+            "   "
+        });
+        
+        ArrayRandomStub R = new ArrayRandomStub(new int[] {
+            //
+            // do not make it move more than once (it will be computed twice, 
+            // once in its original postion, and once in its new position
+            //
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
+        });
+        PrivateAccess.setInstanceValue(W, "RND", R);
+        
+        W.evolve();
+        then(W.getYocto(3, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(1, 1)).isEqualTo(NEUTRAL);
+        
+        W.select(3, 3).moveTo(1, 1); W.evolve();
+        then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(1, 1)).isEqualTo(NEUTRAL);
+        
+        W.select(1, 3).moveTo(1, 1); W.evolve();
+        then(W.getYocto(2, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(1, 1)).isEqualTo(NEUTRAL);
+        
+        W.select(2, 3).moveTo(1, 1); W.evolve();
+        then(W.getYocto(3, 2)).isEqualTo(REJECTOR);
+        then(W.getYocto(1, 1)).isEqualTo(NEUTRAL);
+        
+        W.select(3, 2).moveTo(1, 1); W.evolve();
+        then(W.getYocto(3, 1)).isEqualTo(REJECTOR);
+        then(W.getYocto(1, 1)).isEqualTo(NEUTRAL);
+    }
+    
+    
+    @Test
     public void bring_yocto_to_life() throws Exception {
         final YoctoWorld W1 = YoctoWorldFactory.fromStrings(MAP1);
         final YoctoWorld W2 = YoctoWorldFactory.fromStrings(MAP2);

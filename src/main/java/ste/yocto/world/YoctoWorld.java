@@ -207,13 +207,7 @@ public class YoctoWorld {
     public int getEnergy(int x, int y) {
         checkCoordinates(x, y);
                 
-        final int MAXW = getWidth()-1;
-        final int MAXH = getHeight()-1;
-        
-        // the grid is 1-based for users
-        --x; --y;
-        
-        final Yocto Y = map[y][x];
+        final Yocto Y = getYocto(x, y);
         
         //
         // if coordinates overlay an edge, continue on the other edge (the world 
@@ -246,8 +240,15 @@ public class YoctoWorld {
     
     // ------------------------------------------------------- protected methods
     
+    //
+    // TODO: check coordinates
+    //
     public Yocto getYocto(int x, int y) {
         return map[y-1][x-1];
+    }
+    
+    public Yocto getYocto(YoctoSpot spot) {
+        return getYocto(spot.x, spot.y);
     }
     
     // --------------------------------------------------------- private methods
@@ -278,56 +279,85 @@ public class YoctoWorld {
         }
     }
     
+    private YoctoSpot getNWSpot(int x, int y) {
+        return new YoctoSpot(
+            (x == 1) ? getWidth() : x-1, (y == 1) ? getHeight() : y-1
+        );
+    }
+    
     private Yocto getNW(int x, int y) {
-        x = (x == 0) ? (getWidth()-1) : x-1;
-        y = (y == 0) ? (getHeight()-1) : y-1;
-        
-        return map[y][x];
+        return getYocto(getNWSpot(x, y));
     }
     
-    private Yocto getW(int x, int y) {
-        x = (x == 0) ? (getWidth()-1) : x-1;
-        
-        return map[y][x];
-    }
-    
-    private Yocto getSW(int x, int y) {
-        x = (x == 0) ? (getWidth()-1) : x-1;
-        y = (y == getHeight()-1) ? 0 : y+1;
-        
-        return map[y][x];
+    private YoctoSpot getNSpot(int x, int y) {
+        return new YoctoSpot(
+            x, (y == 1) ? getHeight() : y-1
+        );
     }
     
     private Yocto getN(int x, int y) {
-        y = (y == 0) ? (getHeight()-1) : y-1;
-        
-        return map[y][x];
+        return getYocto(getNSpot(x, y));
     }
     
-    private Yocto getS(int x, int y) {
-        y = (y == getHeight()-1) ? 0 : y+1;
-        
-        return map[y][x];
+    private YoctoSpot getNESpot(int x, int y) {
+        return new YoctoSpot(
+            (x == getWidth()) ? 1 : x+1, (y == 1) ? getHeight() : y-1
+        );
     }
     
     private Yocto getNE(int x, int y) {
-        x = (x == getWidth()-1) ? 0 : x+1;
-        y = (y == 0) ? getHeight()-1 : y-1;
-        
-        return map[y][x];
+        return getYocto(getNESpot(x, y));
+    }
+
+    
+    private YoctoSpot getESpot(int x, int y) {
+        return new YoctoSpot(
+            (x == getWidth()) ? 1 : x+1, y
+        );
     }
     
     private Yocto getE(int x, int y) {
-        x = (x == getWidth()-1) ? 0 : x+1;
-        
-        return map[y][x];
+        return getYocto(getESpot(x, y));
+    }
+    
+    private YoctoSpot getSESpot(int x, int y) {
+        return new YoctoSpot(
+            (x == getWidth()) ? 1 : x+1, (y == getHeight()) ? 1 : y+1
+        );
     }
     
     private Yocto getSE(int x, int y) {
-        x = (x == getWidth()-1) ? 0 : x+1;
-        y = (y == getHeight()-1) ? 0 : y+1;
+        return getYocto(getSESpot(x, y));
+    }
+    
+    private YoctoSpot getSSpot(int x, int y) {
+        return new YoctoSpot(
+            x, (y == getHeight()) ? 1 : y+1
+        );
+    }
+    
+    private Yocto getS(int x, int y) {
+        return getYocto(getSSpot(x, y));
+    }
+    
+    private YoctoSpot getSWSpot(int x, int y) {
+        return new YoctoSpot(
+            (x == 1) ? getWidth() : x-1, (y == getHeight()) ? 1 : y+1
+        );
+    }
+    
+    private Yocto getSW(int x, int y) {
+        return getYocto(getSWSpot(x, y));
+    }
         
-        return map[y][x];
+    private YoctoSpot getWSpot(int x, int y) {
+        return new YoctoSpot(
+            (x == 1) ? getWidth() : x-1, y
+        );
+    }
+    
+    private Yocto getW(int x, int y) {
+        return getYocto(getWSpot(x, y));
     }
     
     private void move(YoctoSpot from, YoctoSpot to) {
@@ -338,23 +368,18 @@ public class YoctoWorld {
     }
     
     private void moveToBestSpot(int x, int y, int e) {
-        final int WIDTH  =  getWidth();
-        final int HEIGHT = getHeight();
-        
-        int eMax;
+        int eMax = e;
         
         YoctoSpot from = new YoctoSpot(x, y);
         YoctoSpot to;
         
-        eMax = e;
-        
         //
         // North West
         //
-        if ((x>1 && y>1) && (getYocto(x-1, y-1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x-1, y-1);
+        to = getNWSpot(x,y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x-1, y-1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -373,10 +398,10 @@ public class YoctoWorld {
         //
         // North
         //
-        if ((y>1) && (getYocto(x, y-1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x, y-1);
+        to = getNSpot(x,y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x, y-1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -395,10 +420,10 @@ public class YoctoWorld {
         //
         // North East
         //
-        if ((x<WIDTH && y>1) && (getYocto(x+1, y-1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x+1, y-1);
+        to = getNESpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x+1, y-1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -417,10 +442,10 @@ public class YoctoWorld {
         //
         // East
         //
-        if ((x<WIDTH) && (getYocto(x+1, y) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x+1, y);
+        to = getESpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x+1, y);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -439,10 +464,10 @@ public class YoctoWorld {
         //
         // South East
         //
-        if ((x<WIDTH && y<HEIGHT) && (getYocto(x+1, y+1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x+1, y+1);
+        to = getSWSpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x+1, y+1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -461,10 +486,10 @@ public class YoctoWorld {
         //
         // South
         //
-        if ((y<HEIGHT) && (getYocto(x, y+1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x, y+1);
+        to = getSSpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x, y+1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -483,10 +508,10 @@ public class YoctoWorld {
         //
         // South West
         //
-        if ((x>1 && y<HEIGHT) && (getYocto(x-1, y+1) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x-1, y+1);
+        to = getSWSpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x-1, y+1);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
@@ -505,10 +530,10 @@ public class YoctoWorld {
         //
         // West
         //
-        if ((x>1) && (getYocto(x-1, y) == Yocto.NEUTRAL)) {
-            to = new YoctoSpot(x-1, y);
+        to = getWSpot(x, y);
+        if (getYocto(to) == Yocto.NEUTRAL) {
             move(from, to);
-            e = getEnergy(x-1, y);
+            e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
                 if (RND.nextBoolean()) {
