@@ -79,6 +79,9 @@
                 <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#play" prefHeight="26.0" prefWidth="5.0" text="▶" textAlignment="CENTER" />
             <Button fx:id="pauseButton" disable="true" mnemonicParsing="false" onAction="#pause" text="■" />
             </children>
+         <padding>
+            <Insets top="5.0" />
+         </padding>
         </HBox>
     </children>
    <padding>

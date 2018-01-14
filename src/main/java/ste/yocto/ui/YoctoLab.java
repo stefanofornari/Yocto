@@ -42,8 +42,8 @@ import ste.yocto.world.YoctoWorldFactory;
 public class YoctoLab extends Application
                       implements Initializable {
     
-    public static final int WIDTH = 10;
-    public static final int HEIGHT = 10;
+    public static final int WIDTH = 20;
+    public static final int HEIGHT = 20;
     
     private static Parent root;
     
