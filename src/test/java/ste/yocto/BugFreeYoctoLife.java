@@ -48,29 +48,29 @@ public class BugFreeYoctoLife {
     };
 
     private static final String[] MAP2 = new String[] {
-        "+- =  =-++",
+        "+-==  =-++",
         "-+=+=-+++=",
-        "  =++=-++=",
-        "= +=-  ==-",
-        "+=-=  --  ",
-        " +===-= --",
-        "+=+--++= +",
-        "++-  =-=-=",
-        "=== - +  -",
-        "  -  -=+= "
+        "  =++=-++=", 
+        "= +=-  =+=",
+        "+=-=  - --",
+        " +===-=- -",
+        "+=+=--  =+",
+        "++-  +- -=",
+        "==  -=+= -",
+        "  -  - += "
     };
     
     private static final String[] MAP3 = new String[] {
-        "+- =  =-++",
+        "+-==  =-++",
         "-+=+=-+++=",
         "  =++=-++=",
-        "= +=- -==-",
-        "+=-==  -- ",
-        " +== -== +",
-        "+=+--++ -=",
-        "++-  =- - ",
-        "==   -+=- ",
-        "= -  -=+= "
+        "= +=- -=+=",
+        "+=-==  - -",
+        " +==-  - -",
+        "+=+ - =  +",
+        "++- -+-=-=",
+        "==   =+= -",
+        "= -- - += "
     };
     
     @Test
@@ -84,8 +84,10 @@ public class BugFreeYoctoLife {
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 0});
         PrivateAccess.setInstanceValue(W, "RND", R);
         
-        W.evolve();
-        then(W.getYocto(1, 3)).isEqualTo(ATTRACTOR);
+        W.evolve(); printWorld(W);
+        then(W.getYocto(1, 2)).isEqualTo(ATTRACTOR);
+        then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(2, 3)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
         
         W = YoctoWorldFactory.fromStrings(new String[] {
@@ -95,8 +97,10 @@ public class BugFreeYoctoLife {
         });
         PrivateAccess.setInstanceValue(W, "RND", R);
         
-        W.evolve();
-        then(W.getYocto(3, 1)).isEqualTo(ATTRACTOR);
+        W.evolve(); printWorld(W);
+        then(W.getYocto(1, 2)).isEqualTo(ATTRACTOR);
+        then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(2, 3)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
     }
     
@@ -111,9 +115,10 @@ public class BugFreeYoctoLife {
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 0, 0, 0, 0, 0});
         PrivateAccess.setInstanceValue(W, "RND", R);
         
-        W.evolve();
-        then(W.getYocto(2, 1)).isEqualTo(FRIEND);
-        then(W.getYocto(2, 2)).isEqualTo(REJECTOR);        
+        W.evolve(); printWorld(W);
+        then(W.getYocto(3, 1)).isEqualTo(FRIEND);
+        then(W.getYocto(3, 3)).isEqualTo(REJECTOR);
+        then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
     }
     
     @Test
@@ -127,12 +132,12 @@ public class BugFreeYoctoLife {
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 1, 0, 1, 0, 0, 1, 1});
         PrivateAccess.setInstanceValue(W, "RND", R);
         
-        W.evolve();
+        W.evolve(); printWorld(W);
         then(W.getYocto(1, 2)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
         
-        W.evolve();
-        then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
+        W.evolve(); printWorld(W);
+        then(W.getYocto(2, 2)).isEqualTo(REJECTOR);
         then(W.getYocto(1, 2)).isEqualTo(NEUTRAL);
         
     }
@@ -207,6 +212,10 @@ public class BugFreeYoctoLife {
     private void printWorld(YoctoWorld w) {
         System.out.println("\n+----------+");
         for (int y=1; y<=w.getHeight(); ++y) {
+            for (int x=1; x<=w.getWidth(); ++x) {
+                System.out.print(w.getYocto(x, y).toChar() + " ");
+            }
+            System.out.print('\t');
             for (int x=1; x<=w.getWidth(); ++x) {
                 System.out.print(w.getEnergy(x, y) + " ");
             }
