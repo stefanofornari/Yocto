@@ -18,7 +18,6 @@ package ste.yocto.world;
 import static org.assertj.core.api.AssertionsForClassTypes.fail;
 import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
-import ste.xtest.Constants;
 import ste.yocto.world.YoctoWorld.Yocto;
 import static ste.yocto.world.YoctoWorld.Yocto.ATTRACTOR;
 import static ste.yocto.world.YoctoWorld.Yocto.FRIEND;
