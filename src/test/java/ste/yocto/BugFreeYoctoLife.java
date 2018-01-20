@@ -23,6 +23,9 @@ import ste.yocto.world.YoctoWorld;
 import org.junit.Test;
 import ste.xtest.math.ArrayRandomStub;
 import ste.xtest.reflect.PrivateAccess;
+import ste.yocto.world.WorldHelper;
+import ste.yocto.world.YoctoWorld;
+import ste.yocto.world.YoctoWorldFactory;
 import static ste.yocto.world.YoctoWorld.Yocto.ATTRACTOR;
 import static ste.yocto.world.YoctoWorld.Yocto.FRIEND;
 import static ste.yocto.world.YoctoWorld.Yocto.NEUTRAL;
@@ -82,9 +85,9 @@ public class BugFreeYoctoLife {
         });
         
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 0});
-        PrivateAccess.setInstanceValue(W, "RND", R);
+        W.setRandom(R);
         
-        W.evolve(); printWorld(W);
+        W.evolve(); WorldHelper.printWorld(W);
         then(W.getYocto(1, 2)).isEqualTo(ATTRACTOR);
         then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 3)).isEqualTo(REJECTOR);
@@ -95,9 +98,9 @@ public class BugFreeYoctoLife {
             " + ",
             "  -"
         });
-        PrivateAccess.setInstanceValue(W, "RND", R);
+        W.setRandom(R);
         
-        W.evolve(); printWorld(W);
+        W.evolve(); WorldHelper.printWorld(W);
         then(W.getYocto(1, 2)).isEqualTo(ATTRACTOR);
         then(W.getYocto(1, 3)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 3)).isEqualTo(REJECTOR);
@@ -113,9 +116,9 @@ public class BugFreeYoctoLife {
         });
         
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 0, 0, 0, 0, 0});
-        PrivateAccess.setInstanceValue(W, "RND", R);
+        W.setRandom(R);
         
-        W.evolve(); printWorld(W);
+        W.evolve(); WorldHelper.printWorld(W);
         then(W.getYocto(3, 1)).isEqualTo(FRIEND);
         then(W.getYocto(3, 3)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
@@ -130,16 +133,29 @@ public class BugFreeYoctoLife {
         });
         
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 1, 0, 1, 0, 0, 1, 1});
-        PrivateAccess.setInstanceValue(W, "RND", R);
+        W.setRandom(R);
         
-        W.evolve(); printWorld(W);
+        W.evolve(); WorldHelper.printWorld(W);
         then(W.getYocto(1, 2)).isEqualTo(REJECTOR);
         then(W.getYocto(2, 2)).isEqualTo(NEUTRAL);
         
-        W.evolve(); printWorld(W);
+        W.evolve(); WorldHelper.printWorld(W);
         then(W.getYocto(2, 2)).isEqualTo(REJECTOR);
         then(W.getYocto(1, 2)).isEqualTo(NEUTRAL);
+    }
+    
+    @Test
+    public void not_random_move_if_same_energy() throws Exception {
+        final YoctoWorld W = YoctoWorldFactory.fromStrings(new String[] {
+            "   ",
+            " - ",
+            "   "
+        });
         
+        W.setRandom(null);
+        
+        W.evolve(); WorldHelper.printWorld(W);
+        then(W.getYocto(2, 2)).isEqualTo(REJECTOR);
     }
     
     @Test
@@ -161,7 +177,7 @@ public class BugFreeYoctoLife {
             0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
         });
-        PrivateAccess.setInstanceValue(W, "RND", R);
+        W.setRandom(R);
         
         W.evolve();
         then(W.getYocto(3, 3)).isEqualTo(REJECTOR);
@@ -192,47 +208,21 @@ public class BugFreeYoctoLife {
         final YoctoWorld W3 = YoctoWorldFactory.fromStrings(MAP3);
         
         ArrayRandomStub R = new ArrayRandomStub(new int[] {1, 1, 0, 1, 0, 0, 1, 0});
-        PrivateAccess.setInstanceValue(W1, "RND", R);
+        W1.setRandom(R);
         
-        printWorld(W1);
-        
-        W1.evolve();
-        printWorld(W1);
-        thenWorldIsEqualTo(W1, W2);
+        WorldHelper.printWorld(W1);
         
         W1.evolve();
-        printWorld(W1);
-        thenWorldIsEqualTo(W1, W3);
+        WorldHelper.printWorld(W1);
+        WorldHelper.thenWorldIsEqualTo(W1, W2);
         
-        printWorld(W1);
+        W1.evolve();
+        WorldHelper.printWorld(W1);
+        WorldHelper.thenWorldIsEqualTo(W1, W3);
+        
+        WorldHelper.printWorld(W1);
     }
     
     // -------------------------------------------------------------------------
-
-    private void printWorld(YoctoWorld w) {
-        System.out.println("\n+----------+");
-        for (int y=1; y<=w.getHeight(); ++y) {
-            for (int x=1; x<=w.getWidth(); ++x) {
-                System.out.print(w.getYocto(x, y).toChar() + " ");
-            }
-            System.out.print('\t');
-            for (int x=1; x<=w.getWidth(); ++x) {
-                System.out.print(w.getEnergy(x, y) + " ");
-            }
-            System.out.print('\n');
-        }
-        System.out.println("\n+----------+");
-    }
-    
-    private void thenWorldIsEqualTo(YoctoWorld w1, YoctoWorld w2) {
-        for (int y=1; y<=w1.getHeight(); ++y) {
-            for (int x=1; x<=w1.getWidth(); ++x) {
-                System.out.println(x + "," + y);
-                then(w1.getYocto(x, y)).isEqualTo(w2.getYocto(x, y));
-            }
-            System.out.print('\n');
-        }
-    }
-    
     
 }

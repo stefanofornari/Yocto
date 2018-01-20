@@ -88,11 +88,16 @@ public class YoctoWorld {
         }
     };
     
-    private Random RND = new Random();
+    private Random RND;
     private YoctoSpot selected = null;
     private Yocto[][] map;
     
+    protected YoctoWorld() {
+        RND = new Random();
+    }
+    
     public YoctoWorld(int width, int height) {
+        this();
         
         if (width < 1) {
             throw new IllegalArgumentException("width must be a postive number (found " + width + ")");
@@ -113,6 +118,7 @@ public class YoctoWorld {
     }
     
     public YoctoWorld(Yocto[][] map) {
+        this();
         if (map == null) {
             throw new IllegalArgumentException("map can not be null");
         }
@@ -238,8 +244,6 @@ public class YoctoWorld {
         }
     }
     
-    // ------------------------------------------------------- protected methods
-    
     //
     // TODO: check coordinates
     //
@@ -249,6 +253,13 @@ public class YoctoWorld {
     
     public Yocto getYocto(YoctoSpot spot) {
         return getYocto(spot.x, spot.y);
+    }
+    
+    //
+    // TODO: sanity check
+    //
+    public void setRandom(Random rnd) {
+        RND = rnd;
     }
     
     // --------------------------------------------------------- private methods
@@ -367,6 +378,10 @@ public class YoctoWorld {
         }
     }
     
+    private boolean shallStay() {
+        return ((RND != null) && RND.nextBoolean());
+    }
+    
     private void moveToBestSpot(int x, int y, int e) {
         int eMax = e;
         
@@ -382,7 +397,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -404,7 +419,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -426,7 +441,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from);
@@ -448,7 +463,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -470,7 +485,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -492,7 +507,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -514,7 +529,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
@@ -536,7 +551,7 @@ public class YoctoWorld {
             e = getEnergy(to.x, to.y);
             if (e == eMax) {
                 // same energy, randomly stay or move back 
-                if (RND.nextBoolean()) {
+                if (shallStay()) {
                     from = to;
                 } else {
                     move(to, from); 
