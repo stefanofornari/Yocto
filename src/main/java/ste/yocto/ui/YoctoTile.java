@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.StringPropertyBase;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -160,8 +161,14 @@ public class YoctoTile extends TilePane
         }
         
         public void set(Yocto y) {
+            ObservableList<String> styles = getStyleClass();
+            
+            styles.removeAll(CSS_CLASS_YOCTO_TILE + "-" + yocto.toString().toLowerCase());
+            
             yocto = y;
             setValue(String.valueOf(y.toChar()));
+            
+            styles.add(CSS_CLASS_YOCTO_TILE + "-" + yocto.toString().toLowerCase());
         }
         
         public Yocto getYocto() {

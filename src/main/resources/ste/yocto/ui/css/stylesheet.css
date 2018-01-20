@@ -2,6 +2,22 @@
     -fx-background-color: #f0f0f0;
 }
 
+.yocto-tile-neutral {
+    -fx-background-color: #f0f0f0;
+}
+
+.yocto-tile-rejector {
+    -fx-background-color: #acb2d7;
+}
+
+.yocto-tile-attractor {
+    -fx-background-color: #eab886;
+}
+
+.yocto-tile-friend {
+    -fx-background-color: #ace0b8;
+}
+
 .yocto-tile-high {
     -fx-background-color: wheat;
 }

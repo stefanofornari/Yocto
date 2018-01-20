@@ -17,10 +17,11 @@
  */
 package ste.yocto.world;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
+import org.apache.commons.io.IOUtils;
 import ste.yocto.world.YoctoWorld.Yocto;
-
-
 
 /**
  * TODO: argument validation
@@ -70,6 +71,14 @@ public class YoctoWorldFactory {
         }
         
         return new YoctoWorld(map);
+    }
+    
+    public static YoctoWorld fromFile(String file) throws IOException {
+        String content = IOUtils.toString(new FileReader(file));
+        
+        return YoctoWorldFactory.fromStrings(
+             content.split("\n")
+        );
     }
     
     

@@ -17,6 +17,7 @@
  */
 package ste.yocto.ui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -45,6 +46,8 @@ public class YoctoLab extends Application
     public static final int WIDTH = 20;
     public static final int HEIGHT = 20;
     
+    public static final String PARAM_WORLD = "world";
+    
     private static Parent root;
     
     private Task updateViewTask;
@@ -58,10 +61,24 @@ public class YoctoLab extends Application
     @FXML
     private Button pauseButton;
     
-    public static final YoctoWorld WORLD = YoctoWorldFactory.empty(WIDTH, HEIGHT);
+    public static YoctoWorld WORLD = null;
     
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
+        Parameters params = getParameters();
+        
+        System.out.println("PARAMETERS: " + params.getNamed());
+        System.out.println("PARAMETERS: " + params.getUnnamed());
+        System.out.println("PARAMETERS: " + params.getRaw());
+        
+        String worldFile = params.getNamed().get(PARAM_WORLD);
+        if (worldFile != null) {
+            WORLD = YoctoWorldFactory.fromFile(worldFile);
+        } else {
+            WORLD = YoctoWorldFactory.empty(WIDTH, HEIGHT);
+        }
+        
+        root = FXMLLoader.load(YoctoLab.class.getResource("/ste/yocto/ui/YoctoLab.fxml"));
         Scene scene = new Scene(root);
         
         scene.getStylesheets().add(
@@ -81,9 +98,11 @@ public class YoctoLab extends Application
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        for (int y=1; y<=HEIGHT; ++y) {
-            for (int x=1; x<=WIDTH; ++x) {
-                worldPane.add(new YoctoTile(), x-1, y-1);
+        for (int y=1; y<=WORLD.getHeight(); ++y) {
+            for (int x=1; x<=WORLD.getWidth(); ++x) {
+                YoctoTile tile = new YoctoTile();
+                worldPane.add(tile, x-1, y-1);
+                tile.yoctoProperty().set(WORLD.getYocto(x, y));
             }
         }
     }
@@ -135,7 +154,6 @@ public class YoctoLab extends Application
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        root = FXMLLoader.load(YoctoLab.class.getResource("/ste/yocto/ui/YoctoLab.fxml"));
         launch(args);
     }
     

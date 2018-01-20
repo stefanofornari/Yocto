@@ -17,6 +17,8 @@
  */
 package ste.yocto.world;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
 import ste.xtest.math.ArrayRandomStub;
@@ -122,6 +124,41 @@ public class BugFreeYoctoWoldFactory {
             }
         }
         
+    }
+    
+    @Test
+    public void create_world_from_file_ok() throws IOException {
+        YoctoWorld w = YoctoWorldFactory.fromFile("src/test/worlds/small1.yw");
+        
+        thenWorldEqualsTo(
+            w,
+            new byte[][] {
+                new byte[] { '+', ' ', '=' },
+                new byte[] { ' ', ' ', ' ' },
+                new byte[] { ' ', ' ', '-' }
+            }
+        );
+        
+        w = YoctoWorldFactory.fromFile("src/test/worlds/small2.yw");
+        
+        thenWorldEqualsTo(
+            w,
+            new byte[][] {
+                new byte[] { ' ', '=' },
+                new byte[] { ' ', ' ' },
+                new byte[] { ' ', '-' },
+                new byte[] { '+', ' ' }
+            }
+        );
+    }
+    
+    @Test
+    public void crete_world_from_file_with_file_errors() throws Exception {
+        try {
+            YoctoWorldFactory.fromFile("doesnotexist.yw");
+        } catch (FileNotFoundException x) {
+            then(x).hasMessageContaining("doesnotexist.yw");
+        }
     }
     
     // --------------------------------------------------------- private methods
