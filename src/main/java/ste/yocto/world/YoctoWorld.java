@@ -15,6 +15,7 @@
  */
 package ste.yocto.world;
 
+import java.time.Clock;
 import java.util.Random;
 
 /**
@@ -88,9 +89,16 @@ public class YoctoWorld {
         }
     };
     
+    private static Clock CLOCK = Clock.systemDefaultZone();
+    
     private Random RND;
     private YoctoSpot selected = null;
     private Yocto[][] map;
+    
+    /**
+     * Timestamp of when the last evolution started
+     */
+    private long lastEvolutionTimestamp = -1;
     
     protected YoctoWorld() {
         RND = new Random();
@@ -160,6 +168,12 @@ public class YoctoWorld {
     public int getHeight() {
         return map.length;
     }
+    
+    public long getLastEvolutionTimestamp() {
+        return lastEvolutionTimestamp;
+    }
+    
+    // --------------------------------------------------------------- fluid api
     
     public YoctoWorld select(int x, int y) {
         checkCoordinates(x, y);
@@ -232,6 +246,7 @@ public class YoctoWorld {
     }
     
     public void evolve() {
+        lastEvolutionTimestamp = CLOCK.millis();
         for (int y=1; y<=getHeight(); ++y) {
             for (int x=1; x<=getWidth(); ++x) {
                 if (getYocto(x, y) != Yocto.NEUTRAL) {

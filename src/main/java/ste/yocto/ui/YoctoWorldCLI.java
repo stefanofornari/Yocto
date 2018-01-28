@@ -34,12 +34,13 @@ import ste.yocto.world.YoctoWorldFactory;
 class YoctoWorldCLI {
     public static String OPT_HELP       =       "--help";    
     public static String OPT_FILE       =       "--file";
+    public static String OPT_FOREVER    =    "--forever";
     public static String OPT_ITERATIONS = "--iterations";
     public static String OPT_NOT_RANDOM = "--not-random";
     
-    private static YoctoWorld WORLD = null;
+    private YoctoWorld WORLD = null;
     
-    public static void main(String... args) {
+    protected void launch(String... args) {
         YoctoWorldCLI.CommonOptions options = new YoctoWorldCLI.CommonOptions();
         JCommander jc = JCommander.newBuilder()
             .addObject(options)
@@ -65,6 +66,12 @@ class YoctoWorldCLI {
             return;
         }
         
+        if (options.forever && (options.iterations != null)) {
+            System.out.println("\nInvalid arguments: --iteration and --forever can not be provided together.\n");
+            jc.usage();
+            return;
+        }
+        
         try {
             WORLD = YoctoWorldFactory.fromFile(options.file);
         } catch (IOException x) {
@@ -76,23 +83,28 @@ class YoctoWorldCLI {
             WORLD.setRandom(null);
         }
         
-        for (long i=0; i<options.iterations; ++i) {
-            WORLD.evolve();
-            try {
+        try {
+            long i = (options.forever) ? 1 : options.iterations;
+            while (i>0) {
+                WORLD.evolve();
+
                 writeWorldToFile(options.file);
-            } catch (IOException x) {
-                //
-                // TODO: erro handling
-                //
+                if (!options.forever) {
+                    --i;
+                }
             }
+        } catch (IOException x) {
+            //
+            // TODO: erro handling
+            //
         }
     }
     
-    public static YoctoWorld getWorld() {
+    public YoctoWorld getWorld() {
         return WORLD;
     }
     
-    private static void writeWorldToFile(String file) throws IOException {
+    private void writeWorldToFile(String file) throws IOException {
         FileWriter w = new FileWriter(file);
         for (int y=1; y<=WORLD.getHeight(); ++y) {
             if (y>1) {
@@ -106,7 +118,13 @@ class YoctoWorldCLI {
         w.close();
     }
     
-    // --------------------------------------------------------- CommandList
+    // -------------------------------------------------------------------- main
+    
+    public static void main(String... args) {
+        new YoctoWorldCLI().launch(args);
+    }
+    
+    // ------------------------------------------------------------- CommandList
     
     private static class CommonOptions {
         @Parameter(names = "--help", help = true)
@@ -115,10 +133,13 @@ class YoctoWorldCLI {
         @Parameter(names = "--not-random")
         public boolean notRandom;
         
+        @Parameter(names = "--forever")
+        public boolean forever;
+        
         @Parameter(names = "--file")
         public String file;
         
         @Parameter(names = "--iterations", validateWith = PositiveInteger.class)
-        public long iterations;
+        public Long iterations;
     }
 }
