@@ -44,7 +44,7 @@ public class BugFreeYoctoCLI extends BugFreeCLI {
         STDOUT.clearLog();
     }
     
-    @Test
+    @Test(timeout=300)
     public void static_invocation() throws Exception {
         YoctoWorldCLI.main("something");
         then(STDOUT.getLog()).contains("Invalid arguments").contains("Usage:");
@@ -192,31 +192,5 @@ public class BugFreeYoctoCLI extends BugFreeCLI {
             .contains("Invalid arguments:")
             .contains("--iteration and --forever can not be provided together.")
             .contains("Usage:");
-    }
-    
-
-    // ---------------------------------------------------------------- Launcher
-    
-    private class Launcher extends Thread {
-        private final String file;
-        private final YoctoWorldCLI cli;
-        
-        public Launcher(String file) {
-            this.file = file;
-            this.cli = new YoctoWorldCLI();
-        }
-            
-        @Override
-        public void run() {
-            try {
-                cli.launch(OPT_FILE, file, OPT_FOREVER);
-            } catch (Exception x) {
-                x.printStackTrace();
-            }
-        }
-        
-        public YoctoWorld getWorld() {
-            return (cli != null) ? cli.getWorld() : null;
-        }
     }
 }
