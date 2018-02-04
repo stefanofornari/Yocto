@@ -19,7 +19,8 @@ package ste.yocto.ui;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.validators.PositiveInteger;
+import com.beust.jcommander.ParameterException;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -35,6 +36,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import ste.yocto.world.YoctoWorld;
+import ste.yocto.world.YoctoWorldFactory;
 
 /**
  *
@@ -60,48 +62,15 @@ public class YoctoWorldViewer extends Application
     @FXML
     private Button pauseButton;
     
-    public static YoctoWorld WORLD = null;
+    private File worldFile = null;
+    private YoctoWorld WORLD = null;
     
     @Override
     public void start(Stage stage) throws IOException {
-        YoctoWorldViewer.CommonOptions options = new YoctoWorldViewer.CommonOptions();
-        JCommander jc = JCommander.newBuilder()
-            .addObject(options)
-            .build();
-        
-        jc.setProgramName(YoctoWorldCLI.class.getName());
-        
-        Parameters args = getParameters();
-        if (args.getNamed().isEmpty()) {
-            jc.usage();
-            Platform.exit();
-            return;
-        }
-        
-        
-        System.out.println("PARAMETERS: " + args.getNamed());
-        System.out.println("PARAMETERS: " + args.getUnnamed());
-        System.out.println("PARAMETERS: " + args.getRaw());
-        
-        /*
-        String worldFile = params.getNamed().get(PARAM_WORLD);
-        if (worldFile != null) {
-            WORLD = YoctoWorldFactory.fromFile(worldFile);
-        } else {
-            WORLD = YoctoWorldFactory.empty(WIDTH, HEIGHT);
-        }
-        
-        root = FXMLLoader.load(YoctoWorldViewer.class.getResource("/ste/yocto/ui/YoctoLab.fxml"));
-        Scene scene = new Scene(root);
-        
-        scene.getStylesheets().add(
-            getClass().getResource("/ste/yocto/ui/css/stylesheet.css").toExternalForm()
-        );
-        
-        stage.setTitle("YoctoWorld Laboratory");
-        stage.setScene(scene);
-        stage.show();
-        */
+        Parameters params = getParameters();
+        System.out.println("PARAMETERS: " + params.getNamed());
+        System.out.println("PARAMETERS: " + params.getUnnamed());
+        System.out.println("PARAMETERS: " + params.getRaw());
     }
     
     @Override
@@ -133,10 +102,6 @@ public class YoctoWorldViewer extends Application
             @Override
             protected Void call() throws Exception {
                 while (!isCancelled()) {
-                    /*
-                    printWorld(WORLD);
-                    WORLD.evolve();
-                    printWorld(WORLD);
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
                             showWorld(WORLD);
@@ -145,9 +110,9 @@ public class YoctoWorldViewer extends Application
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException x) {
-                        return null;
+                        break;
                     }
-                    */
+
                 }
                 return null;
             }
@@ -161,6 +126,66 @@ public class YoctoWorldViewer extends Application
         pauseButton.setDisable(false);
     }
     
+    public YoctoWorld getWorld() {
+        return WORLD;
+    }
+    
+    // ------------------------------------------------------- protected methods
+    
+    protected void _main(String... args) {
+        YoctoWorldViewer.CommonOptions options = new YoctoWorldViewer.CommonOptions();
+        JCommander jc = JCommander.newBuilder()
+            .addObject(options)
+            .build();
+        
+        jc.setProgramName(YoctoWorldCLI.class.getName());
+        
+        try {
+            jc.parse(args);
+        } catch (ParameterException x) {
+            System.out.println("\nInvalid arguments: " + x.getMessage() + "\n");
+            jc.usage();
+            Platform.exit();
+            return;
+        }
+        
+        if (options.help) {
+            jc.usage();
+            Platform.exit();
+            return;
+        }
+        
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                     Application.launch(YoctoWorldViewer.class, args);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                }
+            }
+        }.start();
+        
+        worldFile = options.file;
+        if (!worldFile.exists()) {
+            System.out.println("\nerror: " + worldFile.getAbsolutePath() + " invalid or not found\n");
+            Platform.exit();
+            return;
+        }
+        
+        while(true) {
+            try {
+                WORLD = YoctoWorldFactory.fromFile(worldFile.getAbsolutePath());
+                Thread.sleep(1000);
+            } catch (Exception x) {
+                //
+                // TODO: error handling
+                //
+                x.printStackTrace();
+                break;
+            }
+        }
+    }
     
     
     // -------------------------------------------------------------------- main
@@ -169,7 +194,7 @@ public class YoctoWorldViewer extends Application
      * @param args the command line arguments
      */
     public static void main(String... args) throws Exception {
-        launch(args);
+        new YoctoWorldViewer()._main(args);
     }
     
     // --------------------------------------------------------- private methods
@@ -193,8 +218,8 @@ public class YoctoWorldViewer extends Application
         @Parameter(names = "--help", help = true)
         public boolean help;
         
-        @Parameter(names = "--file")
-        public String file;
+        @Parameter(names = "--file", description = "file write/read the yocto world to/from", required=true)
+        public File file;
     }
     
 }

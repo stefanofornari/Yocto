@@ -17,12 +17,19 @@
  */
 package ste.yocto.ui;
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
 import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import ste.xtest.cli.BugFreeCLI;
+import static ste.yocto.ui.YoctoWorldViewer.OPT_FILE;
+import static ste.yocto.ui.YoctoWorldViewer.OPT_HELP;
+import ste.yocto.world.YoctoWorld;
+import static ste.yocto.world.YoctoWorld.Yocto.ATTRACTOR;
+import static ste.yocto.world.YoctoWorld.Yocto.FRIEND;
 
 /**
  *
@@ -41,8 +48,8 @@ public class BugFreeYoctoWorldViewer extends BugFreeCLI {
         YoctoWorldViewer.main("something");
         then(STDOUT.getLog()).contains("Usage:");
     }
-/*
-    @Test
+
+    @Test(timeout=750)
     public void show_syntax_if_invalid_command() throws Exception {
         final String[][] ARGS = new String[][]{
             new String[]{},
@@ -52,7 +59,7 @@ public class BugFreeYoctoWorldViewer extends BugFreeCLI {
 
         for (String[] A : ARGS) {
             STDOUT.clearLog();
-            new YoctoWorldCLI().launch(A);
+            new YoctoWorldViewer()._main(A);
             if (A.length > 0) {
                 then(STDOUT.getLog()).contains("Invalid arguments").contains("Usage:");
             } else {
@@ -62,88 +69,27 @@ public class BugFreeYoctoWorldViewer extends BugFreeCLI {
         }
     }
 
-    @Test
+    @Test(timeout=750)
     public void show_help_if_command_is_help() throws Exception {
-        new YoctoWorldCLI().launch(OPT_HELP);
+        new YoctoWorldViewer()._main(OPT_HELP);
         then(STDOUT.getLog()).contains("Usage:");
     }
+
     
     @Test
     public void read_world_from_file_ok() throws Exception {
-        YoctoWorldCLI cli = new YoctoWorldCLI();
-        cli.launch(OPT_FILE, "src/test/worlds/small1.yw", OPT_ITERATIONS, "0");
+        final YoctoWorldViewer viewer = new YoctoWorldViewer();
         
-        YoctoWorld w = cli.getWorld();
-        then(w.getHeight()).isEqualTo(3);
-        then(w.getWidth()).isEqualTo(3);
-        then(w.getYocto(3, 3)).isEqualTo(REJECTOR);
-        
-        cli = new YoctoWorldCLI();
-        cli.launch(OPT_FILE, "src/test/worlds/small2.yw", OPT_ITERATIONS, "0");
-        
-        w = cli.getWorld();
-        then(w.getHeight()).isEqualTo(4);
-        then(w.getWidth()).isEqualTo(2);
-        then(w.getYocto(2, 1)).isEqualTo(FRIEND);
-    }
-    
-    @Test
-    public void read_world_from_file_ko() throws Exception {
-        new YoctoWorldCLI().launch(OPT_FILE, "doesnotexist.yw", OPT_ITERATIONS, "0");
-        then(STDOUT.getLog())
-            .contains("error:")
-            .contains(new File("doesnotexist.yw").getAbsolutePath() + " invalid or not found");
-    }
-    
-    @Test
-    public void write_evolution_into_the_file() throws Exception {
-        File newFile = File.createTempFile("yocto", "yw");
-        File worldFile = new File("src/test/worlds/small3.yw");
-        
-        FileUtils.copyFile(worldFile, newFile);
-        YoctoWorldCLI cli = new YoctoWorldCLI();
-        cli.launch(OPT_FILE, newFile.getAbsolutePath(), OPT_ITERATIONS, "1", OPT_NOT_RANDOM);
-        
-        YoctoWorld w = cli.getWorld();
-        WorldHelper.printWorld(w);
-        
-        WorldHelper.thenWorldIsEqualTo(
-            YoctoWorldFactory.fromFile(newFile.getAbsolutePath()),    
-            YoctoWorldFactory.fromStrings(
-                new String[] {
-                    "   ", " = ", " - ", "   "
-                }
-        ));
-        
-        cli = new YoctoWorldCLI();
-        cli.launch(OPT_FILE, newFile.getAbsolutePath(), OPT_ITERATIONS, "1", OPT_NOT_RANDOM);
-        
-        w = cli.getWorld();
-        WorldHelper.printWorld(w);
-        
-        WorldHelper.thenWorldIsEqualTo(
-            YoctoWorldFactory.fromFile(newFile.getAbsolutePath()),    
-            YoctoWorldFactory.fromStrings(
-                new String[] {
-                    "=  ", "-  ", "   ", "   "
-                }
-        ));
-    }
-    
-    
-    @Test
-    public void run_forever_if_forever_argument_is_given() throws Exception {
         File newFile = File.createTempFile("yocto", "yw");
         File worldFile = new File("src/test/worlds/small3.yw");
         
         FileUtils.copyFile(worldFile, newFile);
         
-        YoctoWorldCLI cli = new YoctoWorldCLI();
         new Thread() {
             @Override
             public void run() {
                 try {
-                    cli.launch(OPT_FILE, newFile.getAbsolutePath(), OPT_FOREVER);
+                    viewer._main(OPT_FILE, newFile.getAbsolutePath());
                 } catch (Exception x) {
                     x.printStackTrace();
                 }
@@ -152,7 +98,7 @@ public class BugFreeYoctoWorldViewer extends BugFreeCLI {
         
         int i=0;
         while (i<20) {
-            if (cli.getWorld() == null) {
+            if (viewer.getWorld() == null) {
                 Thread.sleep(100);
             } else {
                 break;
@@ -161,29 +107,33 @@ public class BugFreeYoctoWorldViewer extends BugFreeCLI {
         }
         then(i).isLessThan(20);
         
-        YoctoWorld w = cli.getWorld();
-        long prevModified = w.getLastEvolutionTimestamp();
-        long lastModified = -1;
-        while(i<10) {
-            Thread.sleep(50);
-            lastModified = w.getLastEvolutionTimestamp();
-            then(lastModified).isGreaterThan(prevModified);
-            prevModified = lastModified;
-            ++i;
-        }
-    }
-    
-    @Test(timeout=300)
-    public void iterations_and_forever_cannot_be_together() throws Exception {
-        File newFile = File.createTempFile("yocto", "yw");
-        File worldFile = new File("src/test/worlds/small3.yw");
+        YoctoWorld w = viewer.getWorld();
+        then(w.getHeight()).isEqualTo(4);
+        then(w.getWidth()).isEqualTo(3);
+        then(w.getYocto(3, 3)).isEqualTo(FRIEND);
+        
+        //
+        // write a new world
+        //
+        worldFile = new File("src/test/worlds/small1.yw");
         FileUtils.copyFile(worldFile, newFile);
         
-        new YoctoWorldCLI().launch(OPT_FILE, newFile.getAbsolutePath(), OPT_ITERATIONS, "0", OPT_FOREVER);
-        then(STDOUT.getLog())
-            .contains("Invalid arguments:")
-            .contains("--iteration and --forever can not be provided together.")
-            .contains("Usage:");
+        //
+        // The viewer shall read the file every 1 seconds
+        //
+        Thread.sleep(1500);
+        
+        w = viewer.getWorld();
+        then(w.getHeight()).isEqualTo(3);
+        then(w.getWidth()).isEqualTo(3);
+        then(w.getYocto(1, 1)).isEqualTo(ATTRACTOR);
     }
-*/
+
+    @Test(timeout=750)
+    public void read_world_from_file_ko() throws Exception {
+        new YoctoWorldViewer()._main(OPT_FILE, "doesnotexist.yw");
+        then(STDOUT.getLog())
+            .contains("error:")
+            .contains(new File("doesnotexist.yw").getAbsolutePath() + " invalid or not found");
+    }
 }
