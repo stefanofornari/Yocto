@@ -37,7 +37,7 @@ import ste.yocto.world.YoctoWorldFactory;
 /**
  *
  */
-public class BugFreeYoctoCLI extends BugFreeCLI {
+public class BugFreeYoctoWorldCLI extends BugFreeCLI {
 
     @Before
     public void before() throws Exception {
